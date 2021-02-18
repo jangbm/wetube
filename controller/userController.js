@@ -30,8 +30,6 @@ export const postLogin = (req, res) => {
 
 export const logout = (req, res) => {
     //to do : logout
-    //hello
-    //in ubuntu
     res.redirect(routes.home);
 }
 
