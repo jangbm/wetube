@@ -20,6 +20,11 @@
       }
       &:last-child {
         justify-self: end;
+        li {
+          a {
+            color: #ffffff;
+          }
+        }
       }
       ul {
         display: flex;
@@ -28,6 +33,9 @@
         text-transform: uppercase;
         li:not(:last-child) {
           margin-right: 15px;
+          a {
+            color: #ffffff;
+          }
         }
       }
       form {
