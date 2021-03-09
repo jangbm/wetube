@@ -10,3 +10,6 @@ const handleError = (error) => console.log(`error on db Connection: ${error}`);
 
 db.once("open", handleOpen);
 db.on("error", handleError);
+
+//db.users.find({})
+//db.users.remove({})

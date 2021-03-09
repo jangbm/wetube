@@ -1,3 +1,4 @@
+import passport from "passport";
 import routes from "../routes";
 import User from "../models/User";
 
@@ -6,7 +7,7 @@ export const getJoin = (req, res) => {
     res.render("join", { pageTitle: "Join" });
 }
 
-export const postJoin = async (req, res) => {
+export const postJoin = async (req, res, next) => {
     const {
         body: {
             name,
@@ -25,30 +26,57 @@ export const postJoin = async (req, res) => {
                 name,
                 email
             });
-            User.register(user, password);
+            await User.register(user, password);
+            next();
         } catch (error) {
             console.log(error);
+            // Log user in
+            res.redirect(routes.home);
         }
-
-        // Log user in
-        
-        res.redirect(routes.home);
     }
 }
 
-
 export const getLogin = (req, res) => res.render("login", { pageTitle: "Login" });
 
-export const postLogin = (req, res) => {
-    res.redirect(routes.home);
+export const postLogin = passport.authenticate("local",{
+    failureRedirect: routes.login,
+    successRedirect: routes.home
+});
+
+export const githubLogin = passport.authenticate("github");
+
+export const githubLoginCallback = async (acceesToken, refreshToken, profile, cb) =>{
+    // github 개인 정보
+    console.log(acceesToken, refreshToken, profile, cb);
+    const { _json: {id, avatar_url, name, email}} = profile;
+    try {
+        const user = await User.findOne({email});
+        if (user){
+            user.githubID = id;
+            user.save();
+            return cb(null, user);
+            } 
+            const newUser = await User.create({
+                email,
+                name,
+                githubID : id,
+                avatarUrl: avatar_url
+            });
+            return cb(null, newUser);
+         } catch(error) {
+            return cb(error)
+    }
+}
+
+export const postGithubLogIn =(req,res)=>{
+    res.redirect(routes.home)
 }
 
 export const logout = (req, res) => {
     //to do : logout
+    req.logout();
     res.redirect(routes.home);
 }
-
-
 
 export const users = (req, res) => res.render("users", { pageTitle: "Users" });
 
